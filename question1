@@ -1,0 +1,66 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<semaphore.h>
+#include<pthread.h>
+sem_t mutex,db;
+int data = 0,rc = 0;
+
+void *reader(void *arg)
+{
+ sem_wait(&mutex);
+rc = rc + 1;
+if(rc==1)
+   sem_wait(&db);
+  printf("\033[0;32mno of readers in critical section %d\033[0m\n",rc);
+
+sem_post(&mutex);
+  printf("\033[0;32mData read by the readers is %d\033[0m\n",data);
+  printf("_________________________________\n");
+int n= rand()%3+1;
+sleep(n);
+sem_wait(&mutex);
+  rc = rc - 1;
+
+if(rc==0)
+  sem_post(&db);
+  sem_post(&mutex);
+}
+
+void *writer(void *arg)
+{
+  sem_wait(&db);
+  data++;
+  printf("\033[0;33mData writen by the writer is %d\033[0m\n",data);
+if(rc==1)
+printf("\033[0;33mno of readers while writing 0\033[0m\n" );
+else
+printf("\033[0;33mno of readers while writing %d\033[0m\n",rc);
+printf("________________________________\n");
+int n=rand()%5+1;
+sleep(n);
+sem_post(&db);
+}
+
+int main()
+{
+printf("\t\t\t***************************************\n");
+printf("\t\t\t*\t\t\033[0;34mOS PROJECT\033[0m            *\n");
+printf("\t\t\t***************************************\n");
+int i,b;
+pthread_t rtid[5],wtid[5];
+sem_init(&mutex,0,1);
+sem_init(&db,0,1);
+
+for(i=0;i<=4;i++)
+  {
+pthread_create(&wtid[i],NULL,writer,NULL);
+ pthread_create(&rtid[i],NULL,reader,NULL);
+  }
+for(i=0;i<=4;i++)
+{
+pthread_join(wtid[i],NULL);
+pthread_join(rtid[i],NULL);
+}
+  return 0;
+
+}
