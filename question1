@@ -63,6 +63,7 @@ for(i=0;i<=4;i++)
 pthread_join(wtid[i],NULL);
 pthread_join(rtid[i],NULL);
 }
+printf("\nTHANK YOU")
   return 0;
 
 }
