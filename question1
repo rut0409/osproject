@@ -5,6 +5,22 @@
 sem_t mutex,db;
 int data = 0,rc = 0;
 
+
+void *write(void *arg)
+{
+  sem_wait(&db);
+  data++;
+  printf("\033[0;33mData writen by the writer is %d\033[0m\n",data);
+if(rc==1)
+printf("\033[0;33mno of readers while writing 0\033[0m\n" );
+else
+printf("\033[0;33mno of readers while writing %d\033[0m\n",rc);
+printf("________________________________\n");
+int n=rand()%5+1;
+sleep(n);
+sem_post(&db);
+}
+
 void *reader(void *arg)
 {
  sem_wait(&mutex);
@@ -26,20 +42,6 @@ if(rc==0)
   sem_post(&mutex);
 }
 
-void *writer(void *arg)
-{
-  sem_wait(&db);
-  data++;
-  printf("\033[0;33mData writen by the writer is %d\033[0m\n",data);
-if(rc==1)
-printf("\033[0;33mno of readers while writing 0\033[0m\n" );
-else
-printf("\033[0;33mno of readers while writing %d\033[0m\n",rc);
-printf("________________________________\n");
-int n=rand()%5+1;
-sleep(n);
-sem_post(&db);
-}
 
 int main()
 {
